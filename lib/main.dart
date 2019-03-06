@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flare_flutter/flare_actor.dart';
+
 void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
@@ -28,19 +30,21 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
+      body: Container(child:
+      Center(child: FlareActor("assets/Flappy.flr", alignment:Alignment.center, fit:BoxFit.contain, animation:"Flap", isPaused: false)
         ),
+      decoration: BoxDecoration(
+              // Box decoration takes a gradient
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomLeft,
+                stops: [0.1, 1.0],
+                colors: [
+                  Color.fromRGBO(131, 232, 255, 1.0),
+                  Color.fromRGBO(10, 20, 211, 1.0),
+                ],
+              ),
+            ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
