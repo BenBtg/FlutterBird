@@ -42,6 +42,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
     )
       ..addListener(() {
         // print("Mainframe "+ _mainAnim.toStringDetails());
+        // Hit testing
+        hitTest();
         this.setState(() {});
       })
       ..addStatusListener((status) async {
@@ -66,16 +68,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       duration: Duration(seconds: 5),
     )
       ..addListener(() {
-        // Hit testing
-        if ((_birdAnim.value > _blockHeight) &&
-            (_mainAnim.value > -0.2) &&
-            (_mainAnim.value < 0.2)) {
-          debugPrint("Hit!");
-          hitColor = Colors.red;
-        } else {
-          hitColor = Colors.green;
-        }
-
+        hitTest();
         this.setState(() {});
       })
       ..addStatusListener((status) {
@@ -84,6 +77,17 @@ class _AppState extends State<App> with TickerProviderStateMixin {
           print("Drop completed" + _birdAnim.toStringDetails());
         }
       });
+  }
+
+  void hitTest() {
+    if ((((2.0 - (_birdAnim.value + 1.0)) * 0.5) < _blockHeight) &&
+        (_mainAnim.value > -0.2) &&
+        (_mainAnim.value < 0.2)) {
+      debugPrint("Hit!");
+      hitColor = Colors.red;
+    } else {
+      hitColor = Colors.green;
+    }
   }
 
   @override
@@ -127,7 +131,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         ),
         Align(
           child: Text(
-            "Score: " + _mainAnim.toStringDetails(),
+            "Score: " + _birdAnim.value.toString(),
             style: TextStyle(color: Colors.white),
           ),
           alignment: Alignment(0.95, -0.95),
