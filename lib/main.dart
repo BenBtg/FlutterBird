@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/physics.dart';
@@ -18,26 +20,61 @@ class App extends StatefulWidget {
   _AppState createState() => _AppState();
 }
 
-class _AppState extends State<App> with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+class _AppState extends State<App> with TickerProviderStateMixin {
+  AnimationController _birdAnim;
+  AnimationController _mainAnim;
+  Random _rnd = new Random(42);
+  Color hitColor = Colors.green;
+  double _blockHeight = 1.0;
   bool _isFlapping =false;
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, lowerBound: -1.0, upperBound: 1.01, debugLabel: "Drop", duration: Duration(seconds: 5),)
+   
+  _mainAnim = AnimationController(vsync: this, lowerBound: -1.5, upperBound: 1.5, debugLabel: "Main", duration: Duration(seconds: 2),)..addListener(() {
+     // print("Mainframe "+ _mainAnim.toStringDetails());
+      this.setState(() {});
+    })..addStatusListener((status) async {
+      if (_birdAnim != null)
+      {
+         print("Frame "+ _birdAnim.toStringDetails());
+      }
+      if (status ==AnimationStatus.completed)
+      {
+       //await new Future.delayed(const Duration(seconds : 2));
+       debugPrint("New block");
+       _blockHeight = _rnd.nextDouble();
+       _mainAnim.reset();
+      _mainAnim.forward();
+      }
+      });
+  _mainAnim.forward();
+
+    
+    _birdAnim = AnimationController(vsync: this, lowerBound: -1.0, upperBound: 1.3, debugLabel: "Drop", duration: Duration(seconds: 5),)
     ..addListener(() {
-      print("Frame "+ _controller.toStringDetails());
+     // Hit testing
+    if ((_birdAnim.value > _blockHeight) && (_mainAnim.value > -0.2) && (_mainAnim.value < 0.2) )
+    {
+      debugPrint("Hit!");
+      hitColor = Colors.red;
+    }
+    else
+    {
+      hitColor = Colors.green;
+    }
+
       this.setState(() {});
     })..addStatusListener((status){
-      print("Status changed " + status.toString() + _controller.toStringDetails());
+     // print("Status changed " + status.toString() + _birdAnim.toStringDetails());
       if (status == AnimationStatus.completed) {
-          print("Drop completed" + _controller.toStringDetails());
+          print("Drop completed" + _birdAnim.toStringDetails());
       }
     });
   }
   @override
   void dispose() {
-    _controller.dispose();
+    _birdAnim.dispose();
     super.dispose();
   }
 
@@ -64,20 +101,23 @@ class _AppState extends State<App> with SingleTickerProviderStateMixin {
               ),
           ),
        ),
+       FractionallySizedBox(heightFactor: 0.8 * _blockHeight, widthFactor: 0.2, alignment: Alignment(0.0-_mainAnim.value, 1.0), child:Container(color: hitColor)),
+       
        FractionallySizedBox(widthFactor: 0.2, heightFactor: 0.2, child:
         FlareActor("assets/FlutterBird.flr", fit:BoxFit.fitWidth, animation:"Flap", isPaused: !_isFlapping),
 
-        alignment: new Alignment(0.0, _controller.value),
+        alignment: Alignment(0.0, _birdAnim.value),
         ),
+        Align(child: Text("Score: " + _mainAnim.toStringDetails(), style: TextStyle(color: Colors.white),), alignment: Alignment(0.95, -0.95),),
        GestureDetector(
         onTap: (){
           _isFlapping=true;
-         double top =_controller.value - 0.25;
-         print("Flying" + _controller.toStringDetails());
-         _controller.animateTo(top, duration: Duration(milliseconds: 200)).whenComplete((){
+         double top =_birdAnim.value - 0.25;
+         print("Flying" + _birdAnim.toStringDetails());
+         _birdAnim.animateTo(top, duration: Duration(milliseconds: 200)).whenComplete((){
           _isFlapping =false;
-         print("Flap completed" + _controller.toStringDetails());
-        _controller.animateWith(GravitySimulation(9.8, _controller.value, 1.01,1.0));
+         print("Flap completed" + _birdAnim.toStringDetails());
+        _birdAnim.animateWith(GravitySimulation(9.8, _birdAnim.value, 1.1,1.0));
         }
         );
         }),
@@ -87,22 +127,3 @@ class _AppState extends State<App> with SingleTickerProviderStateMixin {
     );
   }
 }
-
-// class Bird extends StatefulWidget {
-//   Bird({this.y});
-//   double y;
-//   @override
-//   _BirdState createState() => _BirdState();
-// }
-
-// class _BirdState extends State<Bird> with SingleTickerProviderStateMixin {
-//   @override
-//   Widget build(BuildContext context) {
-//     double height = MediaQuery.of(context).size.height;
-//     double x = MediaQuery.of(context).size.width / 9;
-//     return Container(width: 250.0, height: 200.0, 
-//         child: FlareActor("assets/FlutterBird.flr", alignment: Alignment.topCenter, fit:BoxFit.fill, animation:"Flap", isPaused: false),
-//         transform: Matrix4.identity()..translate(x, widget.y),
-//         );
-//   }
-// }
