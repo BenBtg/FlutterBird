@@ -67,11 +67,9 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   }
 
   void hitTest() {
-    double birdY = ((2.0 - (_birdAnim.value + 1.0)) * 0.5);
-    double birdTop = (_birdAnim.value + 1.0) * 0.5;
+    double birdNorm =_birdAnim.value + 1.0;
     if (((_mainAnim.value > -0.2) && (_mainAnim.value < 0.2)) &&
-        ((birdTop < _blockUHight) || (birdY < _blockLHight))) {
-      debugPrint("Hit!");
+        ((birdNorm * 0.5 < _blockUHight) || (((2.0 - birdNorm) * 0.5) < _blockLHight))) {
       hitColor = Colors.red;
     } else {
       hitColor = Colors.deepPurple;
@@ -147,7 +145,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         ),
         Align(
           child: Text(
-            "Score: " + _birdAnim.value.toString(),
+            "Score: " + _birdAnim.debugLabel,
             style: TextStyle(color: Colors.white),
           ),
           alignment: Alignment(0.95, -0.95),
@@ -155,7 +153,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         GestureDetector(onTap: () {
           _isFlapping = true;
           double top = _birdAnim.value - 0.25;
-          print("Flying" + _birdAnim.toStringDetails());
           _birdAnim
               .animateTo(top, duration: Duration(milliseconds: 150))
               .whenComplete(() {
