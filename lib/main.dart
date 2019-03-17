@@ -26,8 +26,10 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   AnimationController _birdAnim;
   AnimationController _mainAnim;
   Random _rnd = new Random(42);
-  Color hitColor = Colors.green;
-  double _blockHeight = 1.0;
+  Color hitColor;
+  double _blockUHight = 1.0;
+  double _blockLHight = 1.0;
+
   bool _isFlapping = false;
   @override
   void initState() {
@@ -37,23 +39,16 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       vsync: this,
       lowerBound: -1.5,
       upperBound: 1.5,
-      debugLabel: "Main",
       duration: Duration(seconds: 2),
     )
       ..addListener(() {
-        // print("Mainframe "+ _mainAnim.toStringDetails());
-        // Hit testing
         hitTest();
         this.setState(() {});
       })
       ..addStatusListener((status) async {
-        if (_birdAnim != null) {
-          print("Frame " + _birdAnim.toStringDetails());
-        }
         if (status == AnimationStatus.completed) {
-          //await new Future.delayed(const Duration(seconds : 2));
-          debugPrint("New block");
-          _blockHeight = _rnd.nextDouble();
+          _blockLHight = 0.8 * _rnd.nextDouble();
+          _blockUHight = max((1.0 - _blockLHight) - 0.3, 0.1);
           _mainAnim.reset();
           _mainAnim.forward();
         }
@@ -64,15 +59,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       vsync: this,
       lowerBound: -1.0,
       upperBound: 1.3,
-      debugLabel: "Drop",
-      duration: Duration(seconds: 5),
-    )
-      ..addListener(() {
-        hitTest();
-        this.setState(() {});
-      })
-      ..addStatusListener((status) {
-        // print("Status changed " + status.toString() + _birdAnim.toStringDetails());
+    )..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           print("Drop completed" + _birdAnim.toStringDetails());
         }
@@ -80,13 +67,14 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   }
 
   void hitTest() {
-    if ((((2.0 - (_birdAnim.value + 1.0)) * 0.5) < _blockHeight) &&
-        (_mainAnim.value > -0.2) &&
-        (_mainAnim.value < 0.2)) {
+    double birdY = ((2.0 - (_birdAnim.value + 1.0)) * 0.5);
+    double birdTop = (_birdAnim.value + 1.0) * 0.5;
+    if (((_mainAnim.value > -0.2) && (_mainAnim.value < 0.2)) &&
+        ((birdTop < _blockUHight) || (birdY < _blockLHight))) {
       debugPrint("Hit!");
       hitColor = Colors.red;
     } else {
-      hitColor = Colors.green;
+      hitColor = Colors.deepPurple;
     }
   }
 
@@ -105,7 +93,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       body: Stack(fit: StackFit.expand, children: <Widget>[
         Container(
           decoration: BoxDecoration(
-            // Box decoration takes a gradient
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomLeft,
@@ -118,10 +105,39 @@ class _AppState extends State<App> with TickerProviderStateMixin {
           ),
         ),
         FractionallySizedBox(
-            heightFactor: 0.8 * _blockHeight,
+            heightFactor: _blockUHight,
+            widthFactor: 0.2,
+            alignment: Alignment(0.0 - _mainAnim.value, -1.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: hitColor,
+                  boxShadow: [
+                    new BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                      offset: new Offset(2.5, 2.5),
+                    )
+                  ],
+                  borderRadius: BorderRadius.circular(10.0)),
+            )),
+        FractionallySizedBox(
+            heightFactor: _blockLHight,
             widthFactor: 0.2,
             alignment: Alignment(0.0 - _mainAnim.value, 1.0),
-            child: Container(color: hitColor)),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: hitColor,
+                  boxShadow: [
+                    new BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                      offset: new Offset(2.5, 2.5),
+                    )
+                  ],
+                  borderRadius: BorderRadius.circular(10.0)),
+            )),
         FractionallySizedBox(
           widthFactor: 0.2,
           heightFactor: 0.2,
@@ -141,12 +157,11 @@ class _AppState extends State<App> with TickerProviderStateMixin {
           double top = _birdAnim.value - 0.25;
           print("Flying" + _birdAnim.toStringDetails());
           _birdAnim
-              .animateTo(top, duration: Duration(milliseconds: 200))
+              .animateTo(top, duration: Duration(milliseconds: 150))
               .whenComplete(() {
             _isFlapping = false;
-            print("Flap completed" + _birdAnim.toStringDetails());
             _birdAnim
-                .animateWith(GravitySimulation(9.8, _birdAnim.value, 1.1, 1.0));
+                .animateWith(GravitySimulation(5, _birdAnim.value, 1.1, 1.0));
           });
         }),
       ]),
