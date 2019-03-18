@@ -27,8 +27,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   AnimationController _mainAnim;
   Random _rnd = new Random(42);
   Color hitColor;
-  double _blockUHight = 1.0;
-  double _blockLHight = 1.0;
+  double _uSize;
+  double _lSize;
 
   bool _isFlapping = false;
   @override
@@ -47,8 +47,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       })
       ..addStatusListener((status) async {
         if (status == AnimationStatus.completed) {
-          _blockLHight = 0.8 * _rnd.nextDouble();
-          _blockUHight = max((1.0 - _blockLHight) - 0.3, 0.1);
+          _lSize = 0.8 * _rnd.nextDouble();
+          _uSize = max((1.0 - _lSize) - 0.3, 0.1);
           _mainAnim.reset();
           _mainAnim.forward();
         }
@@ -69,7 +69,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   void hitTest() {
     double birdNorm =_birdAnim.value + 1.0;
     if (((_mainAnim.value > -0.2) && (_mainAnim.value < 0.2)) &&
-        ((birdNorm * 0.5 < _blockUHight) || (((2.0 - birdNorm) * 0.5) < _blockLHight))) {
+        ((birdNorm * 0.5 < _uSize) || (((2.0 - birdNorm) * 0.5) < _lSize))) {
       hitColor = Colors.red;
     } else {
       hitColor = Colors.deepPurple;
@@ -103,7 +103,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
           ),
         ),
         FractionallySizedBox(
-            heightFactor: _blockUHight,
+            heightFactor: _uSize,
             widthFactor: 0.2,
             alignment: Alignment(0.0 - _mainAnim.value, -1.0),
             child: Container(
@@ -120,7 +120,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(10.0)),
             )),
         FractionallySizedBox(
-            heightFactor: _blockLHight,
+            heightFactor: _lSize,
             widthFactor: 0.2,
             alignment: Alignment(0.0 - _mainAnim.value, 1.0),
             child: Container(
@@ -145,8 +145,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         ),
         Align(
           child: Text(
-            "Score: " + _birdAnim.debugLabel,
-            style: TextStyle(color: Colors.white),
+            "Score: ",
+            style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           alignment: Alignment(0.95, -0.95),
         ),
