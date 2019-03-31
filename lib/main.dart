@@ -27,8 +27,11 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   AnimationController _mainAnim;
   Random _rnd = new Random(42);
   Color hitColor;
+  bool _hit = true;
   double _uSize;
   double _lSize;
+  int _score = 0;
+  int _highScore = 0;
 
   bool _isFlapping = false;
   @override
@@ -47,10 +50,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       })
       ..addStatusListener((status) async {
         if (status == AnimationStatus.completed) {
-          _lSize = 0.8 * _rnd.nextDouble();
-          _uSize = max((1.0 - _lSize) - 0.3, 0.1);
-          _mainAnim.reset();
-          _mainAnim.forward();
+          startBlock();
+          _score += 1;
         }
       });
     _mainAnim.forward();
@@ -66,11 +67,21 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       });
   }
 
+  void startBlock() {
+    _lSize = 0.8 * _rnd.nextDouble();
+    _uSize = max((1.0 - _lSize) - 0.3, 0.1);
+    _mainAnim.reset();
+    _mainAnim.forward();
+  }
+
   void hitTest() {
-    double birdNorm =_birdAnim.value + 1.0;
-    if (((_mainAnim.value > -0.2) && (_mainAnim.value < 0.2)) &&
+    double birdNorm = _birdAnim.value + 1.0;
+    if (((_mainAnim.value > 0.1) && (_mainAnim.value < 0.5)) &&
         ((birdNorm * 0.5 < _uSize) || (((2.0 - birdNorm) * 0.5) < _lSize))) {
       hitColor = Colors.red;
+      _hit = true;
+      //_birdAnim.stop();
+      _mainAnim.stop();
     } else {
       hitColor = Colors.deepPurple;
     }
@@ -141,11 +152,11 @@ class _AppState extends State<App> with TickerProviderStateMixin {
           heightFactor: 0.2,
           child: FlareActor("assets/FlutterBird.flr",
               fit: BoxFit.fitWidth, animation: "Flap", isPaused: !_isFlapping),
-          alignment: Alignment(0.0, _birdAnim.value),
+          alignment: Alignment(-0.5, _birdAnim.value),
         ),
         Align(
           child: Text(
-            "Score: ",
+            "Score: " + _score.toString(),
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           alignment: Alignment(0.95, -0.95),
@@ -161,6 +172,25 @@ class _AppState extends State<App> with TickerProviderStateMixin {
                 .animateWith(GravitySimulation(5, _birdAnim.value, 1.1, 1.0));
           });
         }),
+         Visibility(
+       
+              child: new RaisedButton(
+            child: Text('Start Game'),
+            color: Theme.of(context).accentColor,
+            elevation: 4.0,
+            splashColor: Colors.blueGrey,
+            onPressed: () {
+              // Perform some action
+              //_hit = false;
+              this.setState((){_hit = false; _score = 0;});
+              startBlock();
+              _birdAnim.reset();
+              _birdAnim.forward();
+              
+            },
+          ),
+          visible: _hit,
+        ),
       ]),
     );
   }
