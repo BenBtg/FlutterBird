@@ -26,7 +26,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   AnimationController _birdAnim;
   AnimationController _mainAnim;
   Random _rnd = new Random(42);
-  Color hitColor;
   bool _hit = true;
   double _uSize;
   double _lSize;
@@ -50,7 +49,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       })
       ..addStatusListener((status) async {
         if (status == AnimationStatus.completed) {
-          startBlock();
+          move();
           _score += 1;
         }
       });
@@ -67,7 +66,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       });
   }
 
-  void startBlock() {
+  void move() {
     _lSize = 0.8 * _rnd.nextDouble();
     _uSize = max((1.0 - _lSize) - 0.3, 0.1);
     _mainAnim.reset();
@@ -78,12 +77,9 @@ class _AppState extends State<App> with TickerProviderStateMixin {
     double birdNorm = _birdAnim.value + 1.0;
     if (((_mainAnim.value > 0.1) && (_mainAnim.value < 0.5)) &&
         ((birdNorm * 0.5 < _uSize) || (((2.0 - birdNorm) * 0.5) < _lSize))) {
-      hitColor = Colors.red;
       _hit = true;
-      //_birdAnim.stop();
+      _highScore = max(_highScore,_score);
       _mainAnim.stop();
-    } else {
-      hitColor = Colors.deepPurple;
     }
   }
 
@@ -119,7 +115,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             alignment: Alignment(0.0 - _mainAnim.value, -1.0),
             child: Container(
               decoration: BoxDecoration(
-                  color: hitColor,
+                  color: Colors.purple,
                   boxShadow: [
                     new BoxShadow(
                       color: Colors.black26,
@@ -136,7 +132,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             alignment: Alignment(0.0 - _mainAnim.value, 1.0),
             child: Container(
               decoration: BoxDecoration(
-                  color: hitColor,
+                  color: Colors.purple,
                   boxShadow: [
                     new BoxShadow(
                       color: Colors.black26,
@@ -156,42 +152,44 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         ),
         Align(
           child: Text(
-            "Score: " + _score.toString(),
+            "Score: " + _score.toString() + " High Score: " + _highScore.toString() ,
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           alignment: Alignment(0.95, -0.95),
         ),
         GestureDetector(onTap: () {
           _isFlapping = true;
-          double top = _birdAnim.value - 0.25;
+          double top = _birdAnim.value - 0.3;
           _birdAnim
               .animateTo(top, duration: Duration(milliseconds: 150))
               .whenComplete(() {
             _isFlapping = false;
-            _birdAnim
-                .animateWith(GravitySimulation(5, _birdAnim.value, 1.1, 1.0));
+            drop();
           });
         }),
          Visibility(
        
               child: new RaisedButton(
-            child: Text('Start Game'),
+            child: Text('Start Game', style: TextStyle(color: Colors.white, fontSize: 50),),
             color: Theme.of(context).accentColor,
             elevation: 4.0,
             splashColor: Colors.blueGrey,
             onPressed: () {
               // Perform some action
               //_hit = false;
-              this.setState((){_hit = false; _score = 0;});
-              startBlock();
+              this.setState((){_hit = false; _score = 0; });
+              move();
               _birdAnim.reset();
-              _birdAnim.forward();
-              
+              drop();
             },
           ),
           visible: _hit,
         ),
       ]),
     );
+  }
+
+  void drop() {
+    _birdAnim.animateWith(GravitySimulation(4, _birdAnim.value, 1.1, 1.0));
   }
 }
