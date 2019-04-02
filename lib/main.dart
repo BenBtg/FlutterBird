@@ -10,8 +10,37 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: App(title: 'Flappy Flutter'),
+      home: App(title: 'Flutter Bird'),
     );
+  }
+}
+
+class Box extends StatelessWidget {
+  final double height;
+  final double y;
+  final double x;
+
+  Box({Key key, this.height, this.x, this.y}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+            heightFactor: height,
+            widthFactor: 0.2,
+            alignment: Alignment(x, y),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.purple,
+                  boxShadow: [
+                    new BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 3,
+                      spreadRadius: 1,
+                      offset: new Offset(2.5, 2.5),
+                    )
+                  ],
+                  borderRadius: BorderRadius.circular(10.0)),
+            ));
   }
 }
 
@@ -59,11 +88,7 @@ class _AppState extends State<App> with TickerProviderStateMixin {
       vsync: this,
       lowerBound: -1.0,
       upperBound: 1.3,
-    )..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          print("Drop completed" + _birdAnim.toStringDetails());
-        }
-      });
+    );
   }
 
   void move() {
@@ -109,40 +134,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             ),
           ),
         ),
-        FractionallySizedBox(
-            heightFactor: _uSize,
-            widthFactor: 0.2,
-            alignment: Alignment(0.0 - _mainAnim.value, -1.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.purple,
-                  boxShadow: [
-                    new BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 3,
-                      spreadRadius: 1,
-                      offset: new Offset(2.5, 2.5),
-                    )
-                  ],
-                  borderRadius: BorderRadius.circular(10.0)),
-            )),
-        FractionallySizedBox(
-            heightFactor: _lSize,
-            widthFactor: 0.2,
-            alignment: Alignment(0.0 - _mainAnim.value, 1.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.purple,
-                  boxShadow: [
-                    new BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 3,
-                      spreadRadius: 1,
-                      offset: new Offset(2.5, 2.5),
-                    )
-                  ],
-                  borderRadius: BorderRadius.circular(10.0)),
-            )),
+        Box(height: _uSize, x: 0.0 - _mainAnim.value, y: -1.0),
+        Box(height: _lSize, x: 0.0 - _mainAnim.value, y: 1.0),
         FractionallySizedBox(
           widthFactor: 0.2,
           heightFactor: 0.2,
