@@ -137,8 +137,12 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         ),
         Align(
           child: Text(
-            "High Score: $_highScore \n Score: $_score", textAlign: TextAlign.right,
-            style: TextStyle(color: Colors.white, fontSize: 20, shadows: [Shadow(blurRadius: 1.0, offset: Offset(1.5, 1.5))]  ),
+            "High Score: $_highScore \n Score: $_score",
+            textAlign: TextAlign.right,
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                shadows: [Shadow(blurRadius: 1.0, offset: Offset(1.5, 1.5))]),
           ),
           alignment: Alignment(0.95, -0.95),
         ),
@@ -156,13 +160,14 @@ class _AppState extends State<App> with TickerProviderStateMixin {
           child: new FlatButton(
             child: Text(
               'Start Game',
-              style: TextStyle(color: Colors.white, fontSize: 50, shadows: [Shadow(blurRadius: 1.0, offset: Offset(2, 2))] ),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 50,
+                  shadows: [Shadow(blurRadius: 1.0, offset: Offset(2, 2))]),
             ),
             color: Theme.of(context).accentColor,
             splashColor: Colors.blueGrey,
             onPressed: () {
-              // Perform some action
-              //_hit = false;
               this.setState(() {
                 _hit = false;
                 _score = 0;
