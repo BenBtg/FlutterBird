@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: App(title: 'Flutter Bird'),
+      home: App(),
     );
   }
 }
@@ -25,28 +25,26 @@ class Box extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
-            heightFactor: height,
-            widthFactor: 0.2,
-            alignment: Alignment(x, y),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.purple,
-                  boxShadow: [
-                    new BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 3,
-                      spreadRadius: 1,
-                      offset: new Offset(2.5, 2.5),
-                    )
-                  ],
-                  borderRadius: BorderRadius.circular(10.0)),
-            ));
+        heightFactor: height,
+        widthFactor: 0.2,
+        alignment: Alignment(x, y),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.purple,
+              boxShadow: [
+                new BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 3,
+                  spreadRadius: 1,
+                  offset: new Offset(2.5, 2.5),
+                )
+              ],
+              borderRadius: BorderRadius.circular(10.0)),
+        ));
   }
 }
 
 class App extends StatefulWidget {
-  App({Key key, this.title}) : super(key: key);
-  final String title;
   @override
   _AppState createState() => _AppState();
 }
@@ -103,22 +101,16 @@ class _AppState extends State<App> with TickerProviderStateMixin {
     if (((_mainAnim.value > 0.1) && (_mainAnim.value < 0.5)) &&
         ((birdNorm * 0.5 < _uSize) || (((2.0 - birdNorm) * 0.5) < _lSize))) {
       _hit = true;
-      _highScore = max(_highScore,_score);
+      _highScore = max(_highScore, _score);
       _mainAnim.stop();
     }
-  }
-
-  @override
-  void dispose() {
-    _birdAnim.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Flutter Bird"),
       ),
       body: Stack(fit: StackFit.expand, children: <Widget>[
         Container(
@@ -145,8 +137,8 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         ),
         Align(
           child: Text(
-            "Score: " + _score.toString() + " High Score: " + _highScore.toString() ,
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            "High Score: $_highScore \n Score: $_score", textAlign: TextAlign.right,
+            style: TextStyle(color: Colors.white, fontSize: 20, shadows: [Shadow(blurRadius: 1.0, offset: Offset(1.5, 1.5))]  ),
           ),
           alignment: Alignment(0.95, -0.95),
         ),
@@ -160,17 +152,21 @@ class _AppState extends State<App> with TickerProviderStateMixin {
             drop();
           });
         }),
-         Visibility(
-       
-              child: new RaisedButton(
-            child: Text('Start Game', style: TextStyle(color: Colors.white, fontSize: 50),),
+        Visibility(
+          child: new FlatButton(
+            child: Text(
+              'Start Game',
+              style: TextStyle(color: Colors.white, fontSize: 50, shadows: [Shadow(blurRadius: 1.0, offset: Offset(2, 2))] ),
+            ),
             color: Theme.of(context).accentColor,
-            elevation: 4.0,
             splashColor: Colors.blueGrey,
             onPressed: () {
               // Perform some action
               //_hit = false;
-              this.setState((){_hit = false; _score = 0; });
+              this.setState(() {
+                _hit = false;
+                _score = 0;
+              });
               move();
               _birdAnim.reset();
               drop();
