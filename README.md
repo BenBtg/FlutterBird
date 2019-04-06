@@ -1,6 +1,9 @@
-# flappy_flutter
+# flutter_bird
+### Flutter Create Entry
+### by Ben Buttigieg
 
-A new Flutter project.
+This app iod 
+
 
 ## Getting Started
 
