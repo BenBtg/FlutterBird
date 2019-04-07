@@ -2,18 +2,20 @@
 ### Flutter Create Entry
 ### by Ben Buttigieg
 
-This app iod 
+Flutter Bird is Ben Buttigieg's entry to Flutter Create. App created in less than 5Kb of Dart code.
 
+Simply tap the screen to start a game and tap to make the bird fly up and try to avoid the obstacles.
 
-## Getting Started
+## Technical Overview
+The game was created in 186 lines and 5061 bytes.
 
-This project is a starting point for a Flutter application.
+2 animation controller are used, one to control the horizontal movement of the obstacle and a second to control the vertical movement of the bird.
 
-A few resources to get you started if this is your first Flutter project:
+The Flutter gravity simulation is used to make the bird fall naturally.
+The Dash bird sprite was created using Flare and a flap animation was added which plays when the bird flys up.
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
+The was not enough space to use RenderBox hit testing so a simple center point hit test is performed in the animation listener.
+If a hit is detected the game end and the Start screen is shown.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Score and high score is shown on the top right with a ncie drop shadow.
+The score is increased every time the horizontal animation completes and the high score is updated accordingly. The high score is persisted between sessions using shared preferences.

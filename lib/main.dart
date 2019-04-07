@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/physics.dart';
@@ -31,16 +30,7 @@ class Box extends StatelessWidget {
         alignment: Alignment(x, y),
         child: Container(
           decoration: BoxDecoration(
-              color: Colors.purple,
-              boxShadow: [
-                new BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 2,
-                  spreadRadius: 1,
-                  offset: new Offset(2, 2),
-                )
-              ],
-              borderRadius: BorderRadius.circular(10)),
+              color: Colors.purple, borderRadius: BorderRadius.circular(10)),
         ));
   }
 }
@@ -66,7 +56,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
   initState() {
     super.initState();
     getHighScore();
-
     _mainAnim = AnimationController(
       vsync: this,
       lowerBound: -1.5,
@@ -86,7 +75,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         }
       });
     _mainAnim.forward();
-
     _birdAnim = AnimationController(
       vsync: this,
       lowerBound: -1.0,
@@ -137,11 +125,6 @@ class _AppState extends State<App> with TickerProviderStateMixin {
         ),
         Box(height: _uSize, x: 0.0 - _mainAnim.value, y: -1.0),
         Box(height: _lSize, x: 0.0 - _mainAnim.value, y: 1.0),
-        FractionallySizedBox(
-          heightFactor: 0.3,
-          child: Container(color: Colors.black26),
-          alignment: Alignment(0, -1.0 + (_uSize * 2.2)),
-        ),
         FractionallySizedBox(
             heightFactor: 0.12,
             child: FlareActor("assets/FlutterBird.flr",
