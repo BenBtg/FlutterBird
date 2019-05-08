@@ -19,3 +19,4 @@ If a hit is detected the game end and the Start screen is shown.
 
 Score and high score is shown on the top right with a ncie drop shadow.
 The score is increased every time the horizontal animation completes and the high score is updated accordingly. The high score is persisted between sessions using shared preferences.
+![alt text](https://github.com/BenBtg/FlutterBird/blob/master/FlutterBirdVideo.gif "Flutter Bird Video")
